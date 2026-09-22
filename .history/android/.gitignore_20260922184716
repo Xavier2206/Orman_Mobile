@@ -1,7 +1,8 @@
 
-/.gradle
-/captures/
 
+/captures/
+/gradlew
+/gradlew.bat
 /local.properties
 GeneratedPluginRegistrant.java
 .cxx/
