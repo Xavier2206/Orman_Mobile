@@ -15,3 +15,8 @@ Proyecto Flutter para **ORMAN** siguiendo la arquitectura **Feature First + Clea
 - `test/`: Pruebas unitarias y de widgets.
 - `integration_test/`: Pruebas de integración.
 - `scripts/`: Scripts auxiliares.
+
+## Autenticación móvil
+
+La ejecución local, la URL para dispositivos físicos y las reglas de release se
+documentan en [docs/auth-mobile.md](docs/auth-mobile.md).

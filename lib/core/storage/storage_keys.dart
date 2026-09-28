@@ -1,4 +1,5 @@
-/// Claves para almacenamiento local y seguro.
-abstract class StorageKeys {
-  // Las claves se definirán posteriormente.
+/// Claves no secretas y seguras usadas por la aplicación.
+abstract final class StorageKeys {
+  static const authTokenPair = 'orman.auth.token-pair';
+  static const deviceId = 'orman.device-id';
 }
