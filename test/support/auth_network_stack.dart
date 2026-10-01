@@ -4,7 +4,6 @@ import 'package:orman/core/auth/token_refresh_coordinator.dart';
 import 'package:orman/core/network/api_client.dart';
 import 'package:orman/core/network/interceptors/auth_interceptor.dart';
 import 'package:orman/core/network/interceptors/error_interceptor.dart';
-import 'package:orman/core/network/interceptors/logging_interceptor.dart';
 import 'package:orman/core/network/interceptors/refresh_token_interceptor.dart';
 import 'package:orman/core/storage/token_storage.dart';
 
@@ -64,7 +63,6 @@ AuthNetworkTestStack createAuthNetworkTestStack({
       sessionEvents: events,
     ),
     ErrorInterceptor(),
-    LoggingInterceptor(),
   ]);
 
   return AuthNetworkTestStack(

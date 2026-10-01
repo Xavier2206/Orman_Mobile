@@ -14,17 +14,20 @@ import '../../../shared/widgets/orman_card.dart';
 import '../../../shared/widgets/orman_page_background.dart';
 import '../../../shared/widgets/orman_status_badge.dart';
 import '../data/notification_api.dart';
+import '../data/notification_refresh_signal.dart';
 import '../models/tenant_notification.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({
     required this.apiClient,
     required this.onUnreadCountChanged,
+    this.refreshSignal,
     super.key,
   });
 
   final ApiClient apiClient;
   final ValueChanged<int> onUnreadCountChanged;
+  final NotificationRefreshSignal? refreshSignal;
 
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();
@@ -33,21 +36,36 @@ class NotificationsPage extends StatefulWidget {
 class _NotificationsPageState extends State<NotificationsPage> {
   late final NotificationApi _api = NotificationApi(widget.apiClient);
   final List<TenantNotification> _items = [];
-  bool _loading = true;
+  bool _loading = false;
   bool _loadingMore = false;
   bool _hasMore = true;
   int _nextPage = 0;
   String? _error;
+  bool _refreshing = false;
+  bool _refreshPending = false;
 
   @override
   void initState() {
     super.initState();
+    widget.refreshSignal?.addListener(_onRefreshRequested);
     unawaited(_load(reset: true));
     unawaited(_refreshSummary());
   }
 
+  @override
+  void didUpdateWidget(covariant NotificationsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshSignal != widget.refreshSignal) {
+      oldWidget.refreshSignal?.removeListener(_onRefreshRequested);
+      widget.refreshSignal?.addListener(_onRefreshRequested);
+    }
+  }
+
   Future<void> _load({required bool reset}) async {
-    if (_loadingMore || (_loading && !reset)) return;
+    if (_loadingMore || _loading) {
+      if (reset) _refreshPending = true;
+      return;
+    }
     final page = reset ? 0 : _nextPage;
     setState(() {
       if (reset && _items.isEmpty) _loading = true;
@@ -71,14 +89,59 @@ class _NotificationsPageState extends State<NotificationsPage> {
           if (reset) _loading = false;
           _loadingMore = false;
         });
+        _runPendingRefreshIfReady();
       }
     }
   }
 
+  void _onRefreshRequested() {
+    if (widget.refreshSignal?.isAuthenticated != true || !mounted) return;
+    unawaited(_refreshFromBackend());
+  }
+
+  Future<void> _refreshFromBackend() async {
+    if (!mounted || widget.refreshSignal?.isAuthenticated != true) return;
+    if (_refreshing) {
+      _refreshPending = true;
+      return;
+    }
+
+    _refreshing = true;
+    if (_loading || _loadingMore) {
+      _refreshPending = true;
+    } else {
+      await _load(reset: true);
+    }
+    await _refreshSummary();
+    _refreshing = false;
+    _runPendingRefreshIfReady();
+  }
+
+  void _runPendingRefreshIfReady() {
+    if (!_refreshPending ||
+        _refreshing ||
+        _loading ||
+        _loadingMore ||
+        !mounted ||
+        widget.refreshSignal?.isAuthenticated != true) {
+      return;
+    }
+    _refreshPending = false;
+    unawaited(_refreshFromBackend());
+  }
+
   Future<void> _refreshSummary() async {
+    if (widget.refreshSignal != null &&
+        !widget.refreshSignal!.isAuthenticated) {
+      return;
+    }
     try {
       final summary = await _api.getSummary();
-      if (mounted) widget.onUnreadCountChanged(summary.unreadCount);
+      if (mounted &&
+          (widget.refreshSignal == null ||
+              widget.refreshSignal!.isAuthenticated)) {
+        widget.onUnreadCountChanged(summary.unreadCount);
+      }
     } on Object {
       // Mantiene el contador anterior si el resumen no está disponible.
     }
@@ -139,6 +202,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   @override
+  void dispose() {
+    widget.refreshSignal?.removeListener(_onRefreshRequested);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = context.ormanColors;
@@ -152,7 +221,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ),
         body: RefreshIndicator(
           onRefresh: () async {
-            await Future.wait([_load(reset: true), _refreshSummary()]);
+            if (widget.refreshSignal?.isAuthenticated == true) {
+              await _refreshFromBackend();
+            } else {
+              await Future.wait([_load(reset: true), _refreshSummary()]);
+            }
           },
           child: ListView(
             key: const Key('tenant-notification-list'),

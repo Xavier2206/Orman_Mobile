@@ -4,6 +4,7 @@ import 'package:orman/app/theme/app_theme.dart';
 import 'package:orman/app/theme/orman_theme_kind.dart';
 import 'package:orman/features/contracts/presentation/contract_detail_page.dart';
 import 'package:orman/features/notifications/presentation/notifications_page.dart';
+import 'package:orman/features/notifications/data/notification_refresh_signal.dart';
 import 'package:orman/features/payments/presentation/installment_detail_page.dart';
 import 'package:orman/features/payments/presentation/payment_form_page.dart';
 import 'package:orman/features/contracts/models/tenant_installment.dart';
@@ -286,6 +287,66 @@ void main() {
     expect(find.text('Septiembre 2026'), findsOneWidget);
     expect(find.text('Bs 1.500,00'), findsOneWidget);
   });
+
+  testWidgets(
+    'an inbox refresh reloads the open list and REST unread summary',
+    (tester) async {
+      final requestPaths = <String>[];
+      final signal = NotificationRefreshSignal()..onAuthenticated();
+      addTearDown(signal.dispose);
+      final api = createFakePortalApi(
+        onRequest: (options, stream) async {
+          requestPaths.add(options.path);
+          if (options.path.endsWith('/notificaciones/resumen')) {
+            return jsonResponse({'noLeidas': 4});
+          }
+          if (options.path.endsWith('/notificaciones')) {
+            return jsonResponse({
+              'content': [notificationJson()],
+              'page': 0,
+              'size': 20,
+              'totalPages': 1,
+              'last': true,
+            });
+          }
+          return jsonResponse({});
+        },
+      );
+      final unreadCounts = <int>[];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.forKind(OrmanThemeKind.orman),
+          home: NotificationsPage(
+            apiClient: api,
+            onUnreadCountChanged: unreadCounts.add,
+            refreshSignal: signal,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        requestPaths.where((path) => path.endsWith('/notificaciones')),
+        hasLength(1),
+      );
+      expect(unreadCounts, [4]);
+
+      signal.requestRefresh();
+      await tester.pumpAndSettle();
+
+      expect(
+        requestPaths.where((path) => path.endsWith('/notificaciones')),
+        hasLength(2),
+      );
+      expect(
+        requestPaths.where((path) => path.endsWith('/notificaciones/resumen')),
+        hasLength(2),
+      );
+      expect(unreadCounts, [4, 4]);
+      expect(find.text('Cuota pendiente'), findsOneWidget);
+    },
+  );
 
   testWidgets('tenant portal contract cards fit narrow phone widths', (
     tester,

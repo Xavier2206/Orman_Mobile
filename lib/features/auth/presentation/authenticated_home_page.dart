@@ -7,6 +7,7 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/app_theme_extensions.dart';
 import '../../../app/theme/orman_theme_controller.dart';
 import '../../../core/auth/session_manager.dart';
+import '../../../core/auth/auth_state.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/utils/formatters.dart';
@@ -15,6 +16,7 @@ import '../../../features/contracts/models/tenant_contract.dart';
 import '../../../features/contracts/models/portal_status.dart';
 import '../../../features/contracts/presentation/contract_detail_page.dart';
 import '../../../features/notifications/data/notification_api.dart';
+import '../../../features/notifications/data/notification_refresh_signal.dart';
 import '../../../features/notifications/presentation/notifications_page.dart';
 import '../../../features/auth/data/models/auth_context.dart';
 import '../../../shared/widgets/orman_buttons.dart';
@@ -29,6 +31,7 @@ class AuthenticatedHomePage extends StatefulWidget {
     required this.themeController,
     required this.apiClient,
     required this.contextData,
+    required this.notificationRefreshSignal,
     super.key,
   });
 
@@ -36,6 +39,7 @@ class AuthenticatedHomePage extends StatefulWidget {
   final OrmanThemeController themeController;
   final ApiClient apiClient;
   final AuthContext contextData;
+  final NotificationRefreshSignal notificationRefreshSignal;
 
   @override
   State<AuthenticatedHomePage> createState() => _AuthenticatedHomePageState();
@@ -53,12 +57,26 @@ class _AuthenticatedHomePageState extends State<AuthenticatedHomePage> {
   int _nextPage = 0;
   int _unreadCount = 0;
   bool _isSigningOut = false;
+  bool _notificationsOpen = false;
 
   @override
   void initState() {
     super.initState();
+    widget.notificationRefreshSignal.addListener(_onNotificationRefresh);
     unawaited(_loadContracts(reset: true));
     unawaited(_refreshUnreadCount());
+  }
+
+  @override
+  void didUpdateWidget(covariant AuthenticatedHomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.notificationRefreshSignal !=
+        widget.notificationRefreshSignal) {
+      oldWidget.notificationRefreshSignal.removeListener(
+        _onNotificationRefresh,
+      );
+      widget.notificationRefreshSignal.addListener(_onNotificationRefresh);
+    }
   }
 
   Future<void> _loadContracts({required bool reset}) async {
@@ -93,12 +111,21 @@ class _AuthenticatedHomePageState extends State<AuthenticatedHomePage> {
   }
 
   Future<void> _refreshUnreadCount() async {
+    if (widget.sessionManager.state.status != AuthStatus.authenticated) return;
     try {
       final summary = await _notifications.getSummary();
-      if (mounted) setState(() => _unreadCount = summary.unreadCount);
+      if (mounted &&
+          widget.sessionManager.state.status == AuthStatus.authenticated) {
+        setState(() => _unreadCount = summary.unreadCount);
+      }
     } on Object {
       // La campana no bloquea el portal si el resumen falla.
     }
+  }
+
+  void _onNotificationRefresh() {
+    if (!mounted || _notificationsOpen) return;
+    unawaited(_refreshUnreadCount());
   }
 
   Future<void> _refreshAll() async {
@@ -106,17 +133,25 @@ class _AuthenticatedHomePageState extends State<AuthenticatedHomePage> {
   }
 
   Future<void> _openNotifications() async {
-    await Navigator.of(context).push<void>(
-      MaterialPageRoute<void>(
-        builder: (context) => NotificationsPage(
-          apiClient: widget.apiClient,
-          onUnreadCountChanged: (count) {
-            if (mounted) setState(() => _unreadCount = count);
-          },
+    setState(() => _notificationsOpen = true);
+    try {
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute<void>(
+          builder: (context) => NotificationsPage(
+            apiClient: widget.apiClient,
+            onUnreadCountChanged: (count) {
+              if (mounted) setState(() => _unreadCount = count);
+            },
+            refreshSignal: widget.notificationRefreshSignal,
+          ),
         ),
-      ),
-    );
-    await _refreshUnreadCount();
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _notificationsOpen = false);
+        await _refreshUnreadCount();
+      }
+    }
   }
 
   Future<void> _openContract(TenantContract contract) async {
@@ -146,6 +181,12 @@ class _AuthenticatedHomePageState extends State<AuthenticatedHomePage> {
     } finally {
       if (mounted) setState(() => _isSigningOut = false);
     }
+  }
+
+  @override
+  void dispose() {
+    widget.notificationRefreshSignal.removeListener(_onNotificationRefresh);
+    super.dispose();
   }
 
   @override

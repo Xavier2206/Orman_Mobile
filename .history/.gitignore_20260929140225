@@ -1,0 +1,155 @@
+# ==============================
+# Sistema y temporales
+# ==============================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+
+tmp/
+temp/
+logs/
+
+
+# ==============================
+# IDE
+# ==============================
+
+.idea/
+.vscode/
+
+*.iml
+*.ipr
+*.iws
+
+
+# ==============================
+# Archivos internos / locales
+# ==============================
+
+AGENTS.md
+**/AGENTS.md
+
+docs/
+
+PLAN*.md
+**/PLAN*.md
+
+AUDITORIA*.md
+**/AUDITORIA*.md
+
+ANALISIS*.md
+**/ANALISIS*.md
+
+INFORME*.md
+**/INFORME*.md
+
+PROMPT*.md
+**/PROMPT*.md
+
+NOTES*.md
+**/NOTES*.md
+
+
+# ==============================
+# Flutter / Dart
+# ==============================
+
+.dart_tool/
+.packages
+.pub/
+.pub-cache/
+
+.flutter-plugins
+.flutter-plugins-dependencies
+
+build/
+coverage/
+
+**/doc/api/
+
+
+# ==============================
+# Plataformas que ORMAN Mobile
+# no publicará
+# ==============================
+
+web/
+windows/
+linux/
+macos/
+
+
+# ==============================
+# Android / Gradle
+# ==============================
+
+**/.gradle/
+**/local.properties
+
+android/captures/
+android/app/debug/
+android/app/profile/
+android/app/release/
+
+.cxx/
+
+
+# ==============================
+# iOS / Xcode
+# ==============================
+
+**/Pods/
+**/.symlinks/
+**/DerivedData/
+**/xcuserdata/
+
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/ephemeral/
+
+
+# ==============================
+# Variables y secretos
+# ==============================
+
+.env
+.env.*
+!.env.example
+
+**/key.properties
+**/*.jks
+**/*.keystore
+**/*.p12
+**/*.pem
+**/*.key
+**/*.mobileprovision
+
+
+# ==============================
+# Otros generados
+# ==============================
+
+node_modules/
+dist/
+target/
+
+
+# ==============================
+# Placeholders vacíos
+# ==============================
+
+**/.gitkeep
+
+
+# ==============================
+# Tooling local
+# ==============================
+
+.github/modernize/

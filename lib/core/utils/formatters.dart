@@ -49,9 +49,13 @@ abstract final class Formatters {
     return '${month[0].toUpperCase()}${month.substring(1)} ${value.year}';
   }
 
-  static String dateTime(DateTime? value) {
+  static String dateTime(
+    DateTime? value, {
+    DateTime Function(DateTime instant)? localize,
+  }) {
     if (value == null) return '—';
-    return '${date(value)} · ${_two(value.hour)}:${_two(value.minute)}';
+    final local = localize?.call(value) ?? value.toLocal();
+    return '${date(local)} · ${_two(local.hour)}:${_two(local.minute)}';
   }
 
   static String fileSize(int bytes) {

@@ -1,3 +1,5 @@
+import 'json_readers.dart';
+
 /// Representación tipada de errores RFC 9457 emitidos por el backend.
 class ProblemDetail {
   const ProblemDetail({
@@ -24,9 +26,6 @@ class ProblemDetail {
 
   factory ProblemDetail.fromJson(Map<String, dynamic> json) {
     final rawTimestamp = json['timestamp'];
-    final parsedTimestamp = rawTimestamp is String
-        ? DateTime.tryParse(rawTimestamp)
-        : null;
     final rawErrors = json['fieldErrors'];
 
     return ProblemDetail(
@@ -36,7 +35,7 @@ class ProblemDetail {
       detail: _readString(json['detail']),
       instance: _readString(json['instance']),
       errorCode: _readString(json['errorCode']),
-      timestamp: parsedTimestamp,
+      timestamp: jsonDate(rawTimestamp),
       traceId: _readString(json['traceId']),
       fieldErrors: rawErrors is List
           ? rawErrors

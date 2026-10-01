@@ -36,6 +36,14 @@ class ApiClient {
     await _request(path, method: 'POST', requiresAuth: requiresAuth);
   }
 
+  Future<void> putEmpty(
+    String path, {
+    Object? data,
+    bool requiresAuth = true,
+  }) async {
+    await _request(path, method: 'PUT', data: data, requiresAuth: requiresAuth);
+  }
+
   Future<Object?> patchJson(
     String path, {
     Object? data,

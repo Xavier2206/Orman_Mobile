@@ -9,9 +9,11 @@ import 'package:orman/app/theme/orman_theme_controller.dart';
 import 'package:orman/app/theme/orman_theme_kind.dart';
 import 'package:orman/features/auth/data/models/auth_context.dart';
 import 'package:orman/features/auth/presentation/authenticated_home_page.dart';
+import 'package:orman/features/notifications/data/notification_refresh_signal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'support/fake_auth_session_service.dart';
+import 'support/fake_http_adapter.dart';
 import 'support/fake_portal_api.dart';
 
 void main() {
@@ -97,6 +99,46 @@ void main() {
 
     expect(find.text('Hola, Juan'), findsOneWidget);
     expect(find.text('Mis contratos'), findsOneWidget);
+  });
+
+  testWidgets('app resume refreshes the unread summary from REST', (
+    WidgetTester tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final summaryRequests = <String>[];
+    final api = createFakePortalApi(
+      onRequest: (options, stream) async {
+        if (options.path.endsWith('/notificaciones/resumen')) {
+          summaryRequests.add(options.path);
+          return jsonResponse({'noLeidas': 7});
+        }
+        return jsonResponse({});
+      },
+    );
+    final signal = NotificationRefreshSignal();
+    addTearDown(signal.dispose);
+    final session = createTestSessionManager(
+      service: FakeAuthSessionService()
+        ..onRestore = () async => testAuthContext,
+    );
+
+    await tester.pumpWidget(
+      OrmanApp(
+        sessionManager: session,
+        apiClient: api,
+        notificationRefreshSignal: signal,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(summaryRequests, hasLength(1));
+    expect(find.text('7'), findsOneWidget);
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+
+    expect(summaryRequests, hasLength(2));
+    expect(find.text('7'), findsOneWidget);
   });
 
   testWidgets('showcase adapts at phone and tablet widths', (

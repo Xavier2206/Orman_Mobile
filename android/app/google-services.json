@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "540647728732",
+    "project_id": "orman-e3a4e",
+    "storage_bucket": "orman-e3a4e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540647728732:android:18c6e3a2e5f0f10e59e899",
+        "android_client_info": {
+          "package_name": "com.orman.orman"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaLQYXaycz_6oSxYvyPSusuiQgJnlyffU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

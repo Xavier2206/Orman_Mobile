@@ -4,4 +4,5 @@ abstract final class ApiEndpoints {
   static const refresh = 'api/v1/auth/refresh';
   static const logout = 'api/v1/auth/logout';
   static const context = 'api/v1/auth/context';
+  static const pushInstallation = 'api/v1/mobile/push-installation';
 }
