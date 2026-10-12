@@ -1,58 +1,82 @@
-# ORMAN
+# ORMAN Mobile
 
 > Trabajo Final · Diplomado en Desarrollo Web y Aplicaciones Móviles · UAJMS 2026<br>
-> Autor: `Xavier Ortega Mancilla` · Tutor: <Nombre del tutor>
+> Autor: `Xavier Ortega Mancilla` · Tutor: `<Nombre del tutor>`
 
 ## 1. Descripción
 
-ORMAN Mobile es la aplicación Android desarrollada con Flutter para acceder desde dispositivos móviles a las funcionalidades habilitadas del sistema ORMAN. La versión actual ofrece autenticación para el portal del inquilino, consulta de contratos y cuotas, registro de pagos con comprobantes y notificaciones internas y push.
+**ORMAN Mobile** es la aplicación Android para el **Inquilino**, desarrollada con Flutter. Permite iniciar sesión contra el Backend ORMAN, consultar contratos y cuotas, registrar pagos adjuntando comprobantes y revisar notificaciones.
 
-El Backend Spring Boot y el Frontend Angular pertenecen a otros repositorios. Este repositorio contiene el cliente móvil.
+La autenticación corresponde al Backend ORMAN. Firebase se utiliza en Android para notificaciones push; no se utiliza Firebase Authentication.
 
-## 2. Stack tecnológico
+### Repositorios relacionados
 
-| Componente | Versión | Función |
-|---|---|---|
-| Flutter | `>=3.44.0` según compatibilidad de `pubspec.lock` | SDK de aplicación |
-| Dart | `^3.12.2` (`pubspec.yaml`) | Lenguaje |
-| Android SDK | Valores compile/min/target delegados a Flutter; no fijados aquí | Plataforma de ejecución |
-| Android Gradle Plugin | `9.0.1` | Build Android |
-| Kotlin | `2.3.20` | Interoperabilidad Android |
-| Gradle | `9.1.0` | Build Android |
-| Dio | `^5.11.1` | Cliente HTTP para el Backend |
-| Flutter SDK | `StatefulWidget`, `ChangeNotifier` | Estado de interfaz; no se añade paquete de gestión de estado |
-| Flutter SDK | `Navigator` y `MaterialPageRoute` | Navegación |
-| `flutter_secure_storage` | `^11.2.0` | Almacenamiento seguro de la pareja de tokens |
-| `shared_preferences` | `^2.5.3` | Preferencias locales e identidad estable de instalación |
-| `firebase_core` | `^4.15.0` | Inicialización de Firebase en Android |
-| `firebase_messaging` | `^16.7.0` | Recepción de Firebase Cloud Messaging |
-| `firebase_app_installations` | `^0.4.4` | Identificador de instalación Firebase |
-| `flutter_local_notifications` | `^22.3.1` | Notificaciones locales en foreground |
-| `image_picker` / `gal` | `^1.2.3` / `^2.3.3` | Selección de comprobantes y guardado de imágenes QR |
-| `device_info_plus` / `uuid` | `^13.2.0` / `^4.6.0` | Datos del dispositivo e identidad estable |
+| Componente | Repositorio |
+|---|---|
+| Backend | [Orman_Backend](https://github.com/Xavier2206/Orman_Backend) |
+| Web | [Orman_Frontend](https://github.com/Xavier2206/Orman_Frontend) |
+| Móvil | [Orman_Mobile](https://github.com/Xavier2206/Orman_Mobile) |
 
-Las versiones con `^` son las restricciones declaradas en `pubspec.yaml`; el mínimo de Flutter proviene de las restricciones de SDK resueltas en `pubspec.lock`.
+### Direcciones de producción
+
+| Servicio | Dirección |
+|---|---|
+| Aplicación web | [https://orman-frontend.ortegaxavier75.workers.dev/](https://orman-frontend.ortegaxavier75.workers.dev/) |
+| Backend | [https://orman-backend-e09w.onrender.com](https://orman-backend-e09w.onrender.com) |
+| Salud del Backend | [https://orman-backend-e09w.onrender.com/api/v1/salud](https://orman-backend-e09w.onrender.com/api/v1/salud) |
+
+El Backend público está disponible y el APK de entrega se compiló para esa dirección. El código fuente no la fija como valor predeterminado: `API_BASE_URL` se proporciona en tiempo de compilación mediante `--dart-define` y debe contener la URL base del Backend, **sin** `/api/v1`.
+
+## 2. Stack tecnológico y versiones
+
+Las restricciones indicadas corresponden a `pubspec.yaml`; las versiones resueltas corresponden a `pubspec.lock`. Los límites del SDK en el lockfile indican compatibilidad mínima, no la versión exacta instalada en cada equipo.
+
+| Componente | Restricción o configuración declarada | Versión resuelta/configurada | Uso |
+|---|---|---|---|
+| Flutter | Sin versión exacta en `pubspec.yaml` | Mínimo compatible `>=3.44.0` en `pubspec.lock` | SDK de aplicación |
+| Dart | `^3.12.2` | Compatibilidad `>=3.12.2 <4.0.0` en `pubspec.lock` | Lenguaje |
+| Android SDK | `compileSdk`, `minSdk` y `targetSdk` delegados a Flutter | Valores provistos por el Flutter SDK usado al compilar | Plataforma Android |
+| Java | Java 17 en Gradle | 17 | Compilación Android |
+| Android Gradle Plugin | Configuración Gradle | 9.0.1 | Compilación Android |
+| Kotlin | Configuración Gradle | 2.3.20 | Interoperabilidad Android |
+| Gradle | Wrapper del proyecto | 9.1.0 | Compilación Android |
+| Google Services Gradle Plugin | Configuración Gradle | 4.5.0 | Configuración Firebase Android |
+| `dio` | `^5.11.1` | 5.11.1 | Cliente HTTP |
+| `flutter_secure_storage` | `^11.2.0` | 11.2.0 | Almacenamiento de tokens |
+| `shared_preferences` | `^2.5.3` | 2.5.5 | Preferencias locales |
+| `device_info_plus` / `uuid` | `^13.2.0` / `^4.6.0` | 13.2.0 / 4.6.0 | Identidad e información de instalación/dispositivo |
+| `flutter_svg` / `http_parser` | `^2.3.0` / `^4.1.2` | 2.3.0 / 4.1.2 | Recursos gráficos y manejo HTTP |
+| `image_picker` / `gal` | `^1.2.3` / `^2.3.3` | 1.2.3 / 2.3.3 | Selección de comprobantes y guardado de imágenes QR |
+| `firebase_core` / `firebase_messaging` | `^4.15.0` / `^16.7.0` | 4.15.0 / 16.7.0 | Inicialización y notificaciones push Android |
+| `firebase_app_installations` | `^0.4.4` | 0.4.4 | Identificador de instalación Firebase |
+| `flutter_local_notifications` | `^22.3.1` | 22.3.1 | Presentación local en foreground |
+| `flutter_lints` / `flutter_launcher_icons` | `^6.0.0` / `^0.14.4` | 6.0.0 / 0.14.4 | Análisis estático e icono de aplicación |
+
+La versión de aplicación declarada en `pubspec.yaml` es **1.0.0+1**. En Android corresponde a `versionName` 1.0.0 y `versionCode` 1.
 
 ## 3. Requisitos previos
 
-- Flutter SDK compatible con Flutter `>=3.44.0` y Dart `^3.12.2`.
-- Android SDK y herramientas de compilación Android; Java 17 para la configuración Gradle actual.
+- Flutter compatible con `>=3.44.0` y Dart compatible con `>=3.12.2 <4.0.0`.
+- Android SDK y herramientas de compilación Android.
+- Java 17 para la configuración Gradle actual.
 - Android Studio o herramientas de línea de comandos de Android.
-- Dispositivo Android físico o emulador compatible.
-- Backend ORMAN disponible en una URL accesible desde el dispositivo.
-- Para FCM en Android, configuración cliente de Firebase en `android/app/google-services.json`.
+- Dispositivo Android físico o emulador.
+- Backend ORMAN accesible desde el dispositivo.
+- Para FCM en Android, el archivo cliente `android/app/google-services.json`, incluido en este repositorio.
 
-## 4. Instalación local
+## 4. Instalación y ejecución local
+
+Clonar el repositorio e instalar las dependencias:
 
 ```bash
-git clone <url-del-repositorio-mobile>
-cd <carpeta-del-mobile>
+git clone https://github.com/Xavier2206/Orman_Mobile.git
+cd Orman_Mobile
 flutter pub get
 ```
 
-### Ejecución en dispositivo Android físico
+### Ejecución con el Backend local en un dispositivo Android físico
 
-Con el Backend local escuchando en el puerto `9090` del equipo de desarrollo, conectar el dispositivo y comprobarlo con `adb devices`. Luego crear el reenvío del puerto y ejecutar Flutter:
+Con el Backend local escuchando en el puerto `9090` del equipo de desarrollo, conectar el teléfono y comprobarlo con `adb devices`. Después, reenviar el puerto y ejecutar Flutter:
 
 ```bash
 adb -s <device-id> reverse tcp:9090 tcp:9090
@@ -65,19 +89,19 @@ En PowerShell, el comando de ejecución puede escribirse en una sola línea:
 flutter run -d <device-id> --dart-define=API_BASE_URL=http://127.0.0.1:9090
 ```
 
-El archivo `android/app/google-services.json` es configuración cliente para Firebase Android. No contiene credenciales del servidor ORMAN.
+La configuración Android `google-services.json` es de cliente Firebase. La integración de Firebase documentada en este proyecto corresponde a notificaciones Android.
 
-## 5. Variables de entorno
+## 5. Configuración de API
 
-Flutter obtiene la URL del Backend mediante `--dart-define`; la aplicación no carga un archivo `.env`.
+Flutter recibe la dirección del Backend mediante `--dart-define`; la aplicación no carga un archivo `.env`.
 
-| Variable | Obligatoria | Descripción |
-|---|---|---|
-| `API_BASE_URL` | Sí para builds release; opcional en debug | URL base HTTP(S) del Backend ORMAN. En release debe ser HTTPS. |
+| Variable | Descripción |
+|---|---|
+| `API_BASE_URL` | URL base HTTP(S) del Backend ORMAN. No añadir `/api/v1`; los endpoints de la API incluyen sus rutas y versión. |
 
-En debug, si no se proporciona, la app usa `http://10.0.2.2:9090`, accesible por defecto desde el emulador Android. Para un dispositivo físico con `adb reverse`, usar `http://127.0.0.1:9090` como se muestra en la sección 4. No hay una URL pública de Backend configurada en este cliente.
+En debug, si no se proporciona, el cliente usa `http://10.0.2.2:9090`, dirección del equipo anfitrión desde el emulador Android. Para el dispositivo físico con `adb reverse`, usar `http://127.0.0.1:9090`. Para la compilación de entrega se usó el Backend público indicado en la sección 1.
 
-## 6. Estructura del repositorio
+## 6. Estructura y arquitectura
 
 ```text
 .
@@ -97,35 +121,27 @@ En debug, si no se proporciona, la app usa `http://10.0.2.2:9090`, accesible por
 └── README.md
 ```
 
-### Arquitectura y funcionalidades
+La organización sigue **Feature First** con una **Clean Architecture pragmática**: `lib/app/` agrupa arranque, configuración, tema y navegación; `lib/core/` contiene autenticación, red, almacenamiento y utilidades; `lib/features/` organiza las funciones por módulo; y `lib/shared/` contiene widgets reutilizables.
 
-La organización sigue **Feature First** con una **Clean Architecture pragmática**: `lib/app/` reúne arranque, configuración, tema y navegación; `lib/core/` contiene autenticación, red, almacenamiento y utilidades; `lib/features/` agrupa las funciones por módulo; y `lib/shared/` contiene widgets reutilizables.
+Los módulos móviles permiten iniciar y cerrar sesión, consultar contratos y cuotas, ver el detalle de una cuota y su QR de cobro, guardar la imagen QR, registrar un pago con imagen de comprobante y consultar la bandeja y el contador de notificaciones. Una notificación válida puede abrir el detalle de la cuota relacionada.
 
-Los módulos móviles actuales permiten iniciar y cerrar sesión, consultar contratos y cuotas, ver el detalle de cuota y QR de cobro, guardar la imagen QR, registrar un pago con imagen de comprobante y consultar la bandeja y el contador de notificaciones. La navegación desde una notificación válida puede abrir el detalle de la cuota relacionada.
+### Autenticación y sesión
 
-### Autenticación y sesión móvil
+La aplicación autentica al Inquilino mediante el Backend ORMAN. Los tokens se guardan usando `flutter_secure_storage`; las preferencias visuales se mantienen separadas en `shared_preferences`.
 
-El inicio de sesión envía login, contraseña, tipo de cliente móvil e identidad estable del dispositivo al Backend. La app continúa cuando la respuesta confirma `AUTHENTICATED`, guarda los tokens de acceso y renovación mediante `flutter_secure_storage` y obtiene el contexto del usuario. La renovación rota la pareja de tokens y coordina en una sola operación las solicitudes concurrentes; el cierre de sesión intenta invalidar la sesión en el Backend y siempre elimina las credenciales locales.
+### API y notificaciones
 
-### API y Firebase Cloud Messaging
+La aplicación consume el Backend ORMAN con el contexto autenticado del Inquilino. Firebase se inicializa para Android y se usa para Firebase Cloud Messaging. Con una sesión autenticada, el cliente registra la instalación Android en el Backend mediante `PUT api/v1/mobile/push-installation`. La recepción de mensajes, la presentación local en foreground y la navegación desde una notificación se implementan en el cliente; la autenticación no corresponde a Firebase.
 
-La aplicación consume el Backend ORMAN, incluido el contexto autenticado y los recursos del portal del inquilino. Firebase se inicializa para Android. Con una sesión autenticada, el cliente registra la instalación Android con el Backend mediante `PUT api/v1/mobile/push-installation`.
+## 7. Cuentas para evaluación académica
 
-ORMAN Mobile recibe mensajes con Firebase Cloud Messaging, presenta una notificación local cuando corresponde en foreground y usa las notificaciones del sistema Android cuando la app está en background. Al abrir una notificación válida, puede navegar al detalle de cuota relacionado; los datos de la bandeja se actualizan desde el Backend.
-
-## 7. Roles y credenciales de prueba
-
-La interfaz móvil implementada corresponde al rol **INQUILINO**. El contexto de autenticación recibe los roles enviados por el Backend, pero este cliente presenta el portal del inquilino.
-
-| Rol | Usuario | Contraseña |
-|---|---|---|
-| INQUILINO | `Christopher_Bumstead` | `78699502` |
-
-> Las credenciales de prueba se comunican a la coordinación por canal privado. No se publican aquí.
+Las cuentas de prueba para la evaluación académica se proporcionan en el apartado A4.4 del documento entregado al tribunal. La aplicación web corresponde al Propietario y la aplicación móvil al Inquilino.
 
 ## 8. Pruebas
 
-Ejecutar desde la raíz del repositorio:
+El repositorio incluye pruebas unitarias y de widgets para autenticación y modelos de sesión, renovación de tokens, contratos, políticas y envío de pagos, notificaciones e instalación FCM, navegación y componentes de interfaz.
+
+Para ejecutarlas desde la raíz del repositorio:
 
 ```bash
 dart format --set-exit-if-changed lib test
@@ -133,19 +149,34 @@ flutter analyze
 flutter test
 ```
 
-Las pruebas cubren autenticación y sesión, renovación de tokens, contratos y cuotas, validación y registro de pagos, notificaciones, registro de instalación FCM, navegación y componentes de interfaz.
+Estos comandos describen cómo ejecutar las comprobaciones. La verificación del APK indicada en la sección siguiente no implica que se hayan ejecutado estas pruebas automatizadas.
 
-## 9. Despliegue
+## 9. APK de entrega y distribución
 
-Para generar un APK Android:
+El APK preparado para la entrega académica tiene los siguientes datos:
+
+- **Versión:** 1.0.0.
+- **Número de compilación Android:** 1.
+- **Archivo:** `ORMAN-1.0.0.apk`.
+- **Ubicación relativa en el espacio de trabajo:** `build/entrega/ORMAN-1.0.0.apk`.
+- **Backend configurado:** `https://orman-backend-e09w.onrender.com` mediante `API_BASE_URL`.
+- **Firma:** clave propia de lanzamiento, certificado `ORMAN Mobile Release`; verificada con `apksigner` y esquema APK v2.
+
+El comando de compilación utilizado para generar un APK release conectado al Backend de producción es:
 
 ```bash
-flutter build apk --release --dart-define=API_BASE_URL=<URL_HTTPS_DEL_BACKEND>
+flutter build apk --release --dart-define=API_BASE_URL=https://orman-backend-e09w.onrender.com
 ```
 
-La configuración Gradle actual utiliza la firma debug para el tipo release como ajuste provisional. Antes de distribuir una versión, se debe configurar la firma Android de lanzamiento. No se documenta una publicación ni un enlace de descarga confirmado.
+La firma release requiere una clave y una configuración privadas externas al repositorio, según la configuración Gradle actual. No se deben incorporar esos archivos privados al control de versiones.
 
-**Aplicación instalable:** <pendiente / enlace al APK>
+### Comprobaciones comunicadas
+
+- El agente verificó la compilación del APK, sus metadatos y su firma.
+- El autor confirmó posteriormente la instalación y el funcionamiento en un teléfono Android; Android mostró la versión 1.0.0.
+- No se registran aquí resultados de ejecución de pruebas automatizadas.
+
+La publicación del APK en GitHub está pendiente. [La página de Releases de Orman_Mobile](https://github.com/Xavier2206/Orman_Mobile/releases) es la página donde se adjuntará el APK; no es un enlace de descarga directa de un archivo ya publicado. El directorio `build/` permanece excluido de Git, por lo que el APK local no forma parte del código fuente publicado y deberá adjuntarse a una Release.
 
 ## 10. Licencia
 

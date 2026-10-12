@@ -11,7 +11,7 @@ desktop.ini
 *.temp
 *.swp
 *.swo
-
+/.history
 tmp/
 temp/
 logs/
