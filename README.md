@@ -176,7 +176,17 @@ La firma release requiere una clave y una configuración privadas externas al re
 - El autor confirmó posteriormente la instalación y el funcionamiento en un teléfono Android; Android mostró la versión 1.0.0.
 - No se registran aquí resultados de ejecución de pruebas automatizadas.
 
-La publicación del APK en GitHub está pendiente. [La página de Releases de Orman_Mobile](https://github.com/Xavier2206/Orman_Mobile/releases) es la página donde se adjuntará el APK; no es un enlace de descarga directa de un archivo ya publicado. El directorio `build/` permanece excluido de Git, por lo que el APK local no forma parte del código fuente publicado y deberá adjuntarse a una Release.
+### Descargar APK
+
+Para esta entrega se publicará un único APK directamente en el repositorio, dentro de `build/entrega/`, en la rama `main`:
+
+- **Versión:** 1.0.0.
+- **Número de compilación:** 1.
+- **Archivo:** `ORMAN-1.0.0.apk`.
+- **Descarga directa:** [ORMAN-1.0.0.apk](https://github.com/Xavier2206/Orman_Mobile/raw/refs/heads/main/build/entrega/ORMAN-1.0.0.apk).
+- **Ver archivo en GitHub:** [ORMAN-1.0.0.apk](https://github.com/Xavier2206/Orman_Mobile/blob/main/build/entrega/ORMAN-1.0.0.apk).
+
+La rama local y la rama publicada `origin/main` son `main`. Los enlaces apuntan a esa rama y quedarán disponibles después de que el autor haga commit y push; todavía no se afirma que funcionen. El directorio `build/` continúa excluido de Git y el resto de sus archivos generados permanece ignorado. GitHub Releases queda como alternativa futura de distribución.
 
 ## 10. Licencia
 
